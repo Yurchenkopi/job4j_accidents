@@ -5,6 +5,7 @@ import ru.job4j.accidents.model.Accident;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,23 +19,36 @@ public class AccidentMem implements AccidentStore {
     }
 
     private void init() {
-        save(new Accident(0, "Тестовое название 1", "Тестовый текст 1", "Адрес 1"));
-        save(new Accident(0, "Тестовое название 2", "Тестовый текст 2", "Адрес 2"));
-        save(new Accident(0, "Тестовое название 3", "Тестовый текст 3", "Адрес 3"));
-        save(new Accident(0, "Тестовое название 4", "Тестовый текст 4", "Адрес 4"));
-        save(new Accident(0, "Тестовое название 5", "Тестовый текст 5", "Адрес 5"));
+        create(new Accident(0, "Тестовое название 1", "Тестовый текст 1", "Адрес 1"));
+        create(new Accident(0, "Тестовое название 2", "Тестовый текст 2", "Адрес 2"));
+        create(new Accident(0, "Тестовое название 3", "Тестовый текст 3", "Адрес 3"));
+        create(new Accident(0, "Тестовое название 4", "Тестовый текст 4", "Адрес 4"));
+        create(new Accident(0, "Тестовое название 5", "Тестовый текст 5", "Адрес 5"));
     }
 
     @Override
-    public Accident save(Accident accident) {
+    public Collection<Accident> findAll() {
+        return accidents.values();
+    }
+
+    @Override
+    public Accident create(Accident accident) {
         accident.setId(nextId.getAndIncrement());
         accidents.put(accident.getId(), accident);
         return accidents.get(accident.getId());
     }
 
+    @Override
+    public boolean update(Accident accident) {
+        return accidents.computeIfPresent(accident.getId(),
+                (id, oldAccident) -> new Accident(
+                        oldAccident.getId(), accident.getName(), accident.getText(),
+                        accident.getAddress()
+                )) != null;
+    }
 
     @Override
-    public Collection<Accident> findAll() {
-        return accidents.values();
+    public Optional<Accident> findById(Integer accidentId) {
+        return Optional.ofNullable(accidents.get(accidentId));
     }
 }

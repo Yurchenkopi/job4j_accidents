@@ -6,6 +6,7 @@
                 <div class="navbar-nav me-auto">
                     <a class="nav-item nav-link" href="/index">Главная</a>
                     <a class="nav-item nav-link" href="/accidents">Список нарушений</a>
+                    <a class="nav-item nav-link" href="/accidents/create">Добавить Инцидент</a>
                 </div>
                 <div class="navbar-nav" th:if="${user == null || user.name == 'Гость' || user.id == 0}">
                     <a class="nav-item nav-link" th:href="@{/users/register}">Регистрация</a>
