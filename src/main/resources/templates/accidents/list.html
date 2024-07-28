@@ -36,6 +36,7 @@
                 <tr th:each="accident: ${accidents}" th:href="@{/accidents/update?id={id}(id=${accident.id})}" style="cursor: pointer;">
                     <td th:text="${accident.id}"></td>
                     <td th:text="${accident.name}"></td>
+                    <td th:text="${accident.type.name}"></td>
                     <td th:if="${#strings.length(accident.text) &gt;= 20}" th:text="${#strings.substring(accident.text, 0, 20) + '...'}"></td>
                     <td th:if="${#strings.length(accident.text) &lt; 20}" th:text="${accident.text}"></td>
                     <td th:text="${accident.address}"></td>

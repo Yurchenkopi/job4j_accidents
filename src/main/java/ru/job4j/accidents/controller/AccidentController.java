@@ -6,12 +6,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.service.AccidentService;
+import ru.job4j.accidents.service.AccidentTypeService;
 
 @Controller
 @RequestMapping("/accidents")
 @AllArgsConstructor
 public class AccidentController {
     private final AccidentService simpleAccidentService;
+
+    private final AccidentTypeService simpleAccidentTypeService;
 
     @GetMapping
     public String getAll(Model model) {
@@ -20,7 +23,8 @@ public class AccidentController {
     }
 
     @GetMapping("/create")
-    public String viewCreateAccident() {
+    public String viewCreateAccident(Model model) {
+        model.addAttribute("types", simpleAccidentTypeService.findAll());
         return "accidents/create";
     }
 
@@ -37,7 +41,8 @@ public class AccidentController {
             model.addAttribute("message", "Заявка с указанным ID не найдена.");
             return "errors/404";
         }
-        model.addAttribute("accident", simpleAccidentService.findById(accidentId).get());
+        model.addAttribute("accident", accidentOptional.get());
+        model.addAttribute("types", simpleAccidentTypeService.findAll());
         return "accidents/edit";
     }
 

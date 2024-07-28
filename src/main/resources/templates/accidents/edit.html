@@ -29,6 +29,12 @@
                             <input type="text" class="form-control" name="name" id="name" th:field="*{name}">
                         </div>
                         <div class="mb-2">
+                            <label for="type"><b>Тип инцидента</b></label>
+                            <select class="form-control" id="type" name="type">
+                                <option th:each="type : ${types}" th:value="${type.id}" th:text="${type.name}" th:selected="${type.id==accident.type.id}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
                             <label for="text"><b>Описание</b></label>
                             <textarea class="form-control" id="text" name="text" rows="3" th:field="*{text}"></textarea>
                         </div>
