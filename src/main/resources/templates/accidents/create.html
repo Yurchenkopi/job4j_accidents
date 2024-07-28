@@ -25,15 +25,15 @@
                 <div class="card-body">
                     <form th:action="@{/accidents/create}" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="id" value="0"/>
-                        <div class="form-group">
+                        <div class="mb-2">
                             <label for="name"><b>Название</b></label>
                             <input type="text" class="form-control" name="name" id="name" placeholder="Название инцидента">
                         </div>
-                        <div class="mb-3">
-                            <label for="text" class="form-label"><b>Описание</b></label>
+                        <div class="mb-2">
+                            <label for="text"><b>Описание</b></label>
                             <textarea class="form-control" id="text" name="text" rows="3" placeholder="Подробное описание инцидента"></textarea>
                         </div>
-                        <div class="form-group">
+                        <div class="mb-2">
                             <label for="address"><b>Адрес</b></label>
                             <input type="text" class="form-control" name="address" id="address" placeholder="Адрес">
                         </div>

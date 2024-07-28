@@ -24,15 +24,15 @@
                 </div>
                 <div class="card-body">
                     <form th:action="@{/accidents/{id}/update(id=*{id})}" th:object="${accident}" method="POST" enctype="multipart/form-data">
-                        <div class="form-group">
+                        <div class="mb-2">
                             <label for="name"><b>Название</b></label>
                             <input type="text" class="form-control" name="name" id="name" th:field="*{name}">
                         </div>
-                        <div class="mb-3">
-                            <label for="text" class="form-label"><b>Описание</b></label>
+                        <div class="mb-2">
+                            <label for="text"><b>Описание</b></label>
                             <textarea class="form-control" id="text" name="text" rows="3" th:field="*{text}"></textarea>
                         </div>
-                        <div class="form-group">
+                        <div class="mb-2">
                             <label for="address"><b>Адрес</b></label>
                             <input type="text" class="form-control" name="address" id="address" th:field="*{address}">
                         </div>
