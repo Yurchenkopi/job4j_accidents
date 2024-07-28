@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public class AccidentTypeMem implements AccidentTypeStore {
-    private final Collection<AccidentType> accidentTypes = new ArrayList<>(){
+    private final Collection<AccidentType> accidentTypes = new ArrayList<>() {
         {
             add(new AccidentType(1, "Две машины"));
             add(new AccidentType(2, "Машина и человек"));
