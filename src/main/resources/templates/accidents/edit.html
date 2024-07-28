@@ -23,7 +23,7 @@
                     Редактирование заявки
                 </div>
                 <div class="card-body">
-                    <form th:action="@{/accidents/{id}/update(id=*{id})}" th:object="${accident}" method="POST" enctype="multipart/form-data">
+                    <form th:action="@{/accidents/update?(id=*{id})}" th:object="${accident}" method="POST" enctype="multipart/form-data">
                         <div class="mb-2">
                             <label for="name"><b>Название</b></label>
                             <input type="text" class="form-control" name="name" id="name" th:field="*{name}">

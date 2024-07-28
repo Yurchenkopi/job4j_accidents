@@ -30,8 +30,8 @@ public class AccidentController {
         return "redirect:/accidents";
     }
 
-    @GetMapping("/{accidentId}")
-    public String viewEditAccident(Model model, @PathVariable int accidentId) {
+    @GetMapping("/update")
+    public String viewEditAccident(Model model, @RequestParam("id") int accidentId) {
         var accidentOptional = simpleAccidentService.findById(accidentId);
         if (accidentOptional.isEmpty()) {
             model.addAttribute("message", "Заявка с указанным ID не найдена.");
@@ -41,7 +41,7 @@ public class AccidentController {
         return "accidents/edit";
     }
 
-    @PostMapping("/{id}/update")
+    @PostMapping("/update")
     public String edit(@ModelAttribute Accident accident, Model model) {
         var isUpdated = simpleAccidentService.update(accident);
         if (!isUpdated) {
