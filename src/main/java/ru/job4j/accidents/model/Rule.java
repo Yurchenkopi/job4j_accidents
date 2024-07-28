@@ -5,23 +5,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Accident {
+public class Rule {
     @EqualsAndHashCode.Include
     private int id;
 
     private String name;
-
-    private AccidentType type;
-
-    private Set<Rule> rules;
-
-    private String text;
-
-    private String address;
 }
+

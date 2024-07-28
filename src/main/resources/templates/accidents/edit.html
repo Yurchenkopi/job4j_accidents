@@ -35,6 +35,12 @@
                             </select>
                         </div>
                         <div class="mb-2">
+                            <label for="rIds"><b>Статья</b></label>
+                            <select class="form-control" id="rIds" name="rules" multiple required>
+                                <option th:each="rule : ${rules}" th:value="${rule.id}" th:text="${rule.name}" th:selected="${accident.rules.contains(rule)}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
                             <label for="text"><b>Описание</b></label>
                             <textarea class="form-control" id="text" name="text" rows="3" th:field="*{text}"></textarea>
                         </div>

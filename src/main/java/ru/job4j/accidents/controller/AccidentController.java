@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.service.AccidentService;
 import ru.job4j.accidents.service.AccidentTypeService;
+import ru.job4j.accidents.service.RuleService;
 
 @Controller
 @RequestMapping("/accidents")
@@ -15,6 +16,8 @@ public class AccidentController {
     private final AccidentService simpleAccidentService;
 
     private final AccidentTypeService simpleAccidentTypeService;
+
+    private final RuleService simpleRuleService;
 
     @GetMapping
     public String getAll(Model model) {
@@ -25,6 +28,7 @@ public class AccidentController {
     @GetMapping("/create")
     public String viewCreateAccident(Model model) {
         model.addAttribute("types", simpleAccidentTypeService.findAll());
+        model.addAttribute("rules", simpleRuleService.findAll());
         return "accidents/create";
     }
 
@@ -43,6 +47,7 @@ public class AccidentController {
         }
         model.addAttribute("accident", accidentOptional.get());
         model.addAttribute("types", simpleAccidentTypeService.findAll());
+        model.addAttribute("rules", simpleRuleService.findAll());
         return "accidents/edit";
     }
 
