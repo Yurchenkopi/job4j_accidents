@@ -53,7 +53,31 @@ public class AccidentJdbc implements AccidentStore {
 
     @Override
     public boolean update(Accident accident) {
-        return false;
+        String sqlAccidentsUpdate = """
+                UPDATE accidents
+                SET name = ?, type_id = ?, text = ?, address = ?
+                WHERE id = ?
+                """;
+        String sqlAccidentsRulesDelete = """
+                DELETE FROM accidents_rules
+                WHERE accident_id = ?
+                """;
+        String sqlAccidentsRulesInsert = """
+                INSERT INTO accidents_rules (accident_id, rule_id)
+                VALUES (?, ?)
+                """;
+        boolean rsl1 = jdbc.update(sqlAccidentsUpdate,
+                accident.getName(),
+                accident.getType().getId(),
+                accident.getText(),
+                accident.getAddress()) != 0;
+        boolean rsl2 = jdbc.update(sqlAccidentsRulesDelete, accident.getId()) != 0;
+        for (Rule r : accident.getRules()) {
+            jdbc.update(sqlAccidentsRulesInsert,
+                    accident.getId(),
+                    r.getId());
+        }
+        return rsl1 || rsl2;
     }
 
     @Override
