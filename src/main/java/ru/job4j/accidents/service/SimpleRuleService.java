@@ -11,15 +11,15 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class SimpleRuleService implements RuleService {
-    private final RuleStore ruleMem;
+    private final RuleStore ruleJdbc;
 
     @Override
     public Collection<Rule> findAll() {
-        return ruleMem.findAll();
+        return ruleJdbc.findAll();
     }
 
     @Override
     public Optional<Rule> findById(int id) {
-        return ruleMem.findById(id);
+        return ruleJdbc.findById(id);
     }
 }
