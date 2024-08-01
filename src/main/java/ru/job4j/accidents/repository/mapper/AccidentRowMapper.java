@@ -9,6 +9,7 @@ import ru.job4j.accidents.model.Rule;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 
 @Component
 @AllArgsConstructor
@@ -16,6 +17,7 @@ public class AccidentRowMapper implements RowMapper<Accident> {
     @Override
     public Accident mapRow(ResultSet rs, int rowNum) throws SQLException {
         Accident accident = new Accident();
+        if (accident.getId() == )
         accident.setId(rs.getInt("a_id"));
         accident.setName(rs.getString("a_name"));
         accident.setText(rs.getString("a_text"));
@@ -30,6 +32,9 @@ public class AccidentRowMapper implements RowMapper<Accident> {
         Rule rule = new Rule();
         rule.setId(rs.getInt("r_id"));
         rule.setName(rs.getString("r_name"));
+        if (accident.getRules() == null) {
+            accident.setRules(new HashSet<>());
+        }
         accident.getRules().add(rule);
 
         return accident;

@@ -11,15 +11,15 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class SimpleAccidentTypeService implements AccidentTypeService {
-    private final AccidentTypeStore accidentTypeMem;
+    private final AccidentTypeStore accidentTypeJdbc;
 
     @Override
     public Collection<AccidentType> findAll() {
-        return accidentTypeMem.findAll();
+        return accidentTypeJdbc.findAll();
     }
 
     @Override
     public Optional<AccidentType> findById(int id) {
-        return accidentTypeMem.findById(id);
+        return accidentTypeJdbc.findById(id);
     }
 }
