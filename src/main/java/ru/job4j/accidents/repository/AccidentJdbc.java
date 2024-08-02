@@ -2,49 +2,70 @@ package ru.job4j.accidents.repository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.job4j.accidents.model.Accident;
+import ru.job4j.accidents.model.AccidentType;
 import ru.job4j.accidents.model.Rule;
-import ru.job4j.accidents.repository.mapper.AccidentRowMapper;
+import ru.job4j.accidents.repository.mapper.RuleRowMapper;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 @Repository
 @AllArgsConstructor
 public class AccidentJdbc implements AccidentStore {
     private final JdbcTemplate jdbc;
 
-    private final AccidentRowMapper accidentRowMapper;
+    private final RuleRowMapper ruleRowMapper;
 
     @Override
     public Collection<Accident> findAll() {
-        return jdbc.query(
+        Collection<Accident> rsl = jdbc.query(
                 """
                         SELECT
-                        a.id AS a_id,
-                        a.name AS a_name,
-                        at.id AS at_id, at.name AS at_name,
-                        r.id AS r_id, r.name AS r_name,
-                        a.text AS a_text,
-                        a.address AS a_address
+                        a.id a_id,
+                        a.name a_name,
+                        at.id at_id, at.name at_name,
+                        a.text a_text,
+                        a.address a_address
                         FROM accidents a
                         JOIN accident_types at ON a.type_id = at.id
-                        LEFT JOIN accidents_rules ar ON a.id = ar.accident_id
-                        JOIN rules r ON ar.rule_id = r.id
                         """,
-                accidentRowMapper);
+                (rs, row) -> rslSetToAccident(rs));
+        rsl.forEach(a -> a.setRules(findRulesByAccidentId(a.getId())));
+        return rsl;
     }
 
     @Override
     public Accident create(Accident accident) {
-        jdbc.update("insert into accidents (name, type_id, text, address) values (?, ?, ?, ?)",
-                accident.getName(),
-                accident.getType().getId(),
-                accident.getText(),
-                accident.getAddress());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sqlInsertIntoAccidents = """
+                INSERT INTO accidents (name, type_id, text, address)
+                values (?, ?, ?, ?)
+                """;
+        String sqlInsertIntoAccidentsRules = """
+                INSERT INTO accidents_rules (accident_id, rule_id)
+                values (?, ?)
+                """;
+
+        jdbc.update(cn -> {
+            PreparedStatement ps = cn.prepareStatement(
+                    sqlInsertIntoAccidents,
+                    new String[] {"id"});
+            ps.setString(1, accident.getName());
+            ps.setInt(2, accident.getType().getId());
+            ps.setString(3, accident.getText());
+            ps.setString(4, accident.getAddress());
+            return ps;
+        }, keyHolder);
+        accident.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
         for (Rule r : accident.getRules()) {
-            jdbc.update("insert into accidents_rules (accident_id, rule_id) values (?, ?)",
+            jdbc.update(
+                    sqlInsertIntoAccidentsRules,
                     accident.getId(),
                     r.getId());
         }
@@ -66,11 +87,13 @@ public class AccidentJdbc implements AccidentStore {
                 INSERT INTO accidents_rules (accident_id, rule_id)
                 VALUES (?, ?)
                 """;
+
         boolean rsl1 = jdbc.update(sqlAccidentsUpdate,
                 accident.getName(),
                 accident.getType().getId(),
                 accident.getText(),
-                accident.getAddress()) != 0;
+                accident.getAddress(),
+                accident.getId()) != 0;
         boolean rsl2 = jdbc.update(sqlAccidentsRulesDelete, accident.getId()) != 0;
         for (Rule r : accident.getRules()) {
             jdbc.update(sqlAccidentsRulesInsert,
@@ -84,21 +107,50 @@ public class AccidentJdbc implements AccidentStore {
     public Optional<Accident> findById(Integer accidentId) {
         String sql = """
                         SELECT
-                        a.id AS a_id,
-                        a.name AS a_name,
-                        at.id AS at_id, at.name AS at_name,
-                        r.id AS r_id, r.name AS r_name,
-                        a.text AS a_text,
-                        a.address AS a_address
+                        a.id a_id,
+                        a.name a_name,
+                        at.id at_id, at.name at_name,
+                        a.text a_text,
+                        a.address a_address
                         FROM accidents a
                         JOIN accident_types at ON a.type_id = at.id
-                        LEFT JOIN accidents_rules ar ON a.id = ar.accident_id
-                        JOIN rules r ON ar.rule_id = r.id
                         WHERE a.id = ?
                         """;
 
         return Optional.ofNullable(jdbc.queryForObject(
                 sql, new Object[]{accidentId},
-                accidentRowMapper));
+                (rs, row) -> rslSetToAccident(rs)));
+    }
+
+    public Set<Rule> findRulesByAccidentId(int accidentId) {
+        String sql = """
+                SELECT r.id r_id, r.name r_name
+                FROM accidents_rules ar
+                LEFT JOIN rules r ON ar.rule_id = r.id
+                WHERE accident_id = ?;
+                """;
+
+        return new HashSet<>(jdbc.query(
+                sql, new Object[]{accidentId},
+                ruleRowMapper));
+    }
+
+    private Accident rslSetToAccident(ResultSet rslSet) throws SQLException {
+        Accident accident = new Accident();
+
+        accident.setId(rslSet.getInt("a_id"));
+        accident.setName(rslSet.getString("a_name"));
+        accident.setText(rslSet.getString("a_text"));
+        accident.setAddress(rslSet.getString("a_address"));
+
+        AccidentType type = new AccidentType();
+        type.setId(rslSet.getInt("at_id"));
+        type.setName(rslSet.getString("at_name"));
+
+        accident.setType(type);
+
+        accident.setRules(new HashSet<>(findRulesByAccidentId(rslSet.getInt("a_id"))));
+
+        return accident;
     }
 }
