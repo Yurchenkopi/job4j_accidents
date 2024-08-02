@@ -6,13 +6,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.job4j.accidents.model.Accident;
-import ru.job4j.accidents.model.AccidentType;
 import ru.job4j.accidents.model.Rule;
-import ru.job4j.accidents.repository.mapper.RuleRowMapper;
+import ru.job4j.accidents.repository.mapper.AccidentRowMapper;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 @Repository
@@ -20,24 +17,25 @@ import java.util.*;
 public class AccidentJdbc implements AccidentStore {
     private final JdbcTemplate jdbc;
 
-    private final RuleRowMapper ruleRowMapper;
-
     @Override
     public Collection<Accident> findAll() {
-        Collection<Accident> rsl = jdbc.query(
+        var accidentRowMapper = new AccidentRowMapper(new HashMap<>());
+        jdbc.query(
                 """
                         SELECT
                         a.id a_id,
                         a.name a_name,
                         at.id at_id, at.name at_name,
+                        r.id r_id, r.name r_name,
                         a.text a_text,
                         a.address a_address
                         FROM accidents a
                         JOIN accident_types at ON a.type_id = at.id
+                        LEFT JOIN accidents_rules ar on a.id = ar.accident_id
+                        JOIN rules r on r.id = ar.rule_id
                         """,
-                (rs, row) -> rslSetToAccident(rs));
-        rsl.forEach(a -> a.setRules(findRulesByAccidentId(a.getId())));
-        return rsl;
+                accidentRowMapper);
+        return accidentRowMapper.getAccidentMap().values();
     }
 
     @Override
@@ -105,52 +103,25 @@ public class AccidentJdbc implements AccidentStore {
 
     @Override
     public Optional<Accident> findById(Integer accidentId) {
+        var accidentRowMapper = new AccidentRowMapper(new HashMap<>());
         String sql = """
                         SELECT
                         a.id a_id,
                         a.name a_name,
                         at.id at_id, at.name at_name,
+                        r.id r_id, r.name r_name,
                         a.text a_text,
                         a.address a_address
                         FROM accidents a
                         JOIN accident_types at ON a.type_id = at.id
+                        LEFT JOIN accidents_rules ar on a.id = ar.accident_id
+                        JOIN rules r on r.id = ar.rule_id
                         WHERE a.id = ?
                         """;
-
-        return Optional.ofNullable(jdbc.queryForObject(
-                sql, new Object[]{accidentId},
-                (rs, row) -> rslSetToAccident(rs)));
-    }
-
-    public Set<Rule> findRulesByAccidentId(int accidentId) {
-        String sql = """
-                SELECT r.id r_id, r.name r_name
-                FROM accidents_rules ar
-                LEFT JOIN rules r ON ar.rule_id = r.id
-                WHERE accident_id = ?;
-                """;
-
-        return new HashSet<>(jdbc.query(
-                sql, new Object[]{accidentId},
-                ruleRowMapper));
-    }
-
-    private Accident rslSetToAccident(ResultSet rslSet) throws SQLException {
-        Accident accident = new Accident();
-
-        accident.setId(rslSet.getInt("a_id"));
-        accident.setName(rslSet.getString("a_name"));
-        accident.setText(rslSet.getString("a_text"));
-        accident.setAddress(rslSet.getString("a_address"));
-
-        AccidentType type = new AccidentType();
-        type.setId(rslSet.getInt("at_id"));
-        type.setName(rslSet.getString("at_name"));
-
-        accident.setType(type);
-
-        accident.setRules(new HashSet<>(findRulesByAccidentId(rslSet.getInt("a_id"))));
-
-        return accident;
+        jdbc.query(
+                sql,
+                accidentRowMapper,
+                accidentId);
+        return Optional.ofNullable(accidentRowMapper.getAccidentMap().values().iterator().next());
     }
 }
