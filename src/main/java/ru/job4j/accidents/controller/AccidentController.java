@@ -13,47 +13,47 @@ import ru.job4j.accidents.service.RuleService;
 @RequestMapping("/accidents")
 @AllArgsConstructor
 public class AccidentController {
-    private final AccidentService simpleAccidentService;
+    private final AccidentService springDataAccidentService;
 
-    private final AccidentTypeService simpleAccidentTypeService;
+    private final AccidentTypeService springDataAccidentTypeService;
 
-    private final RuleService simpleRuleService;
+    private final RuleService springDataRuleService;
 
     @GetMapping
     public String getAll(Model model) {
-        model.addAttribute("accidents", simpleAccidentService.findAll());
+        model.addAttribute("accidents", springDataAccidentService.findAll());
         return "accidents/list";
     }
 
     @GetMapping("/create")
     public String viewCreateAccident(Model model) {
-        model.addAttribute("types", simpleAccidentTypeService.findAll());
-        model.addAttribute("rules", simpleRuleService.findAll());
+        model.addAttribute("types", springDataAccidentTypeService.findAll());
+        model.addAttribute("rules", springDataRuleService.findAll());
         return "accidents/create";
     }
 
     @PostMapping("/create")
     public String save(@ModelAttribute Accident accident) {
-        simpleAccidentService.create(accident);
+        springDataAccidentService.create(accident);
         return "redirect:/accidents";
     }
 
     @GetMapping("/update")
     public String viewEditAccident(Model model, @RequestParam("id") int accidentId) {
-        var accidentOptional = simpleAccidentService.findById(accidentId);
+        var accidentOptional = springDataAccidentService.findById(accidentId);
         if (accidentOptional.isEmpty()) {
             model.addAttribute("message", "Заявка с указанным ID не найдена.");
             return "errors/404";
         }
         model.addAttribute("accident", accidentOptional.get());
-        model.addAttribute("types", simpleAccidentTypeService.findAll());
-        model.addAttribute("rules", simpleRuleService.findAll());
+        model.addAttribute("types", springDataAccidentTypeService.findAll());
+        model.addAttribute("rules", springDataRuleService.findAll());
         return "accidents/edit";
     }
 
     @PostMapping("/update")
     public String edit(@ModelAttribute Accident accident, Model model) {
-        var isUpdated = simpleAccidentService.update(accident);
+        var isUpdated = springDataAccidentService.update(accident);
         if (!isUpdated) {
             model.addAttribute("message", "Заявка с указанным ID не найдена");
             return "errors/404";
