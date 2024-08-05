@@ -9,7 +9,7 @@
                     <a class="nav-item nav-link" href="/accidents/create">Добавить Инцидент</a>
                 </div>
                 <div class="navbar-nav" th:if="${#strings.isEmpty(user)}">
-                    <a class="nav-item nav-link" th:href="@{/users/register}">Регистрация</a>
+                    <a class="nav-item nav-link" th:href="@{/reg}">Регистрация</a>
                     <a class="nav-item nav-link" th:href="@{/login}">Войти</a>
                 </div>
                 <div class="navbar-nav" th:if="${not #strings.isEmpty(user)}">

@@ -1,0 +1,3 @@
+ALTER TABLE authorities DROP COLUMN username;
+
+ALTER TABLE authorities ADD COLUMN id SERIAL PRIMARY KEY;
