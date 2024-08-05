@@ -16,9 +16,7 @@ public class SpringDataRuleService implements RuleService {
 
     @Override
     public Collection<Rule> findAll() {
-        Collection<Rule> rules = new ArrayList<>();
-        ruleSpringData.findAll().forEach(rules::add);
-        return rules;
+        return ruleSpringData.findAll();
     }
 
     @Override

@@ -16,9 +16,7 @@ public class SpringDataAccidentTypeService implements AccidentTypeService {
 
     @Override
     public Collection<AccidentType> findAll() {
-        Collection<AccidentType> accidentTypes = new ArrayList<>();
-        accidentTypeSpringData.findAll().forEach(accidentTypes::add);
-        return accidentTypes;
+        return accidentTypeSpringData.findAll();
     }
 
     @Override

@@ -3,6 +3,7 @@ package ru.job4j.accidents.service;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.repository.AccidentSpringData;
@@ -21,9 +22,7 @@ public class SpringDataAccidentService implements AccidentService {
 
     @Override
     public Collection<Accident> findAll() {
-        Collection<Accident> accidentsCollection = new ArrayList<>();
-        accidentSpringData.findAll().forEach(accidentsCollection::add);
-        return accidentsCollection;
+        return accidentSpringData.findAll(Sort.by(Sort.Direction.ASC, "id"));
     }
 
     @Override
