@@ -21,7 +21,6 @@
                     <div class="mb-3" th:if="${not #lists.isEmpty(errorMessage)}">
                         <p class="text-danger" th:text="${errorMessage}"></p>
                     </div>
-                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <div class="mb-3">
                         <label for="username" class="form-label"><b>Логин</b></label>
                         <input type="text" class="form-control" id="username" name="username" placeholder="Имя пользователя" required>
