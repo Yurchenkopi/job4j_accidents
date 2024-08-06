@@ -17,13 +17,13 @@ import javax.sql.DataSource;
 @AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final String SQL1 = """
+    private static final String FIND_USER = """
             SELECT username, password, enabled
             FROM users
             WHERE username = ?
             """;
 
-    private static final String SQL2 = """
+    private static final String FIND_USERROLE = """
             SELECT u.username, a.authority
             FROM authorities a, users u
             WHERE u.username = ? and u.authority_id = a.id
@@ -39,8 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication()
                 .dataSource(ds)
-                .usersByUsernameQuery(SQL1)
-                .authoritiesByUsernameQuery(SQL2);
+                .usersByUsernameQuery(FIND_USER)
+                .authoritiesByUsernameQuery(FIND_USERROLE);
     }
 
     @Override
