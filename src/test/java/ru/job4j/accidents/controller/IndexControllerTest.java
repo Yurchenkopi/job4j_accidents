@@ -18,7 +18,6 @@ import ru.job4j.accidents.Main;
 @AutoConfigureMockMvc
 public class IndexControllerTest {
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
 
