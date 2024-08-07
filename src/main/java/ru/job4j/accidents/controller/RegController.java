@@ -32,7 +32,7 @@ public class RegController {
         try {
             users.save(user);
         } catch (Exception e) {
-            LOG.error("Error occurred while saving user: " + e.getMessage());
+            LOG.error("Error occurred while saving user:  " + e.getMessage());
             model.addAttribute("errorMessage", "Пользователь с таким username уже зарегистрирован.");
             return "register";
         }
