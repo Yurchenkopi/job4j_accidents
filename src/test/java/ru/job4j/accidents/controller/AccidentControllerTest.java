@@ -2,6 +2,7 @@ package ru.job4j.accidents.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -28,7 +29,8 @@ public class AccidentControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private AccidentService accidentService;
+    @Qualifier("springDataAccidentService")
+    private AccidentService springDataAccidentService;
 
     @Test
     @WithMockUser
@@ -39,7 +41,7 @@ public class AccidentControllerTest {
         var accident2 = new Accident(0, "Тестовое название 2", defaultAccidentType, defaultRules, "Тестовый текст 2", "Адрес 2");
         List<Accident> mockAccidents = List.of(accident1, accident2);
 
-        when(accidentService.findAll()).thenReturn(mockAccidents);
+        when(springDataAccidentService.findAll()).thenReturn(mockAccidents);
 
         this.mockMvc.perform(get("/accidents"))
                 .andDo(print())

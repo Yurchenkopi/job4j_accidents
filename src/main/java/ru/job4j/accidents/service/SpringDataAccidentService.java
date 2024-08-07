@@ -3,16 +3,17 @@ package ru.job4j.accidents.service;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.repository.AccidentSpringData;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
 @Service
+@Qualifier("springDataAccidentService")
 @AllArgsConstructor
 public class SpringDataAccidentService implements AccidentService {
     private final AccidentSpringData accidentSpringData;
