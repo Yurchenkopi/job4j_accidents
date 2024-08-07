@@ -1,6 +1,7 @@
 package ru.job4j.accidents.controller;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,9 +21,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -138,6 +143,51 @@ public class AccidentControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("errors/404"))
+                .andExpect(model().attributeExists("message"))
+                .andExpect(model().attribute("message", expectedErrorMessage));
+    }
+
+    @Test
+    @WithMockUser
+    public void whenTryToCreateAccidentThenSuccess() throws Exception {
+        var expectedText = "Текстовое описание инцидента";
+        this.mockMvc.perform(post("/accidents/create")
+                .param("text", expectedText))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/accidents"));
+        ArgumentCaptor<Accident> argument = ArgumentCaptor.forClass(Accident.class);
+        verify(springDataAccidentService).create(argument.capture());
+        assertThat(argument.getValue().getText()).isEqualTo(expectedText);
+    }
+
+    @Test
+    @WithMockUser
+    public void whenTryToUpdateAccidentThenSuccess() throws Exception {
+        var expectedText = "Текстовое описание инцидента";
+
+        when(springDataAccidentService.update(any(Accident.class))).thenReturn(true);
+
+        this.mockMvc.perform(post("/accidents/update")
+                        .param("text", expectedText))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/accidents"));
+        ArgumentCaptor<Accident> argument = ArgumentCaptor.forClass(Accident.class);
+        verify(springDataAccidentService).update(argument.capture());
+        assertThat(argument.getValue().getText()).isEqualTo(expectedText);
+    }
+
+    @Test
+    @WithMockUser
+    public void whenTryToUpdateAccidentThenGetErrorPageAndMessage() throws Exception {
+        var expectedErrorMessage = "Заявка с указанным ID не найдена";
+
+        when(springDataAccidentService.update(any(Accident.class))).thenReturn(false);
+
+        this.mockMvc.perform(post("/accidents/update"))
+                .andDo(print())
+                .andExpect(status().isOk())
                 .andExpect(model().attributeExists("message"))
                 .andExpect(model().attribute("message", expectedErrorMessage));
     }

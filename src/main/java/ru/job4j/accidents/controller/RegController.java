@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import ru.job4j.accidents.model.User;
 import ru.job4j.accidents.repository.AuthoritySpringDataRepository;
 import ru.job4j.accidents.repository.UserSpringDataRepository;
-import ru.job4j.accidents.service.SpringDataAccidentService;
 
 @Controller
 @AllArgsConstructor
@@ -36,7 +35,6 @@ public class RegController {
             model.addAttribute("errorMessage", "Пользователь с таким username уже зарегистрирован.");
             return "register";
         }
-
         return "redirect:/login";
     }
 
