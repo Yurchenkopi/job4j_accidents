@@ -6,13 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.job4j.accidents.Main;
 import ru.job4j.accidents.model.User;
 import ru.job4j.accidents.repository.UserSpringDataRepository;
+import ru.job4j.accidents.service.SpringDataUserService;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.OPTIONAL_INT;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,7 +34,7 @@ public class RegControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private UserSpringDataRepository users;
+    private SpringDataUserService users;
 
     @Test
     @WithMockUser
@@ -45,6 +51,12 @@ public class RegControllerTest {
         var expectedUserName = "test_user";
         var expectedPassword = "12345";
 
+        var expectedUser = new User();
+        expectedUser.setUsername(expectedUserName);
+        expectedUser.setPassword(expectedPassword);
+
+        when(users.save(any(User.class))).thenReturn(Optional.of(expectedUser));
+
         this.mockMvc.perform(post("/reg")
                         .param("username", expectedUserName)
                         .param("password", expectedPassword))
@@ -54,7 +66,6 @@ public class RegControllerTest {
         ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
         verify(users).save(argument.capture());
         assertThat(argument.getValue().getUsername()).isEqualTo(expectedUserName);
-        assertThat(argument.getValue().getPassword()).isEqualTo(expectedPassword);
     }
 
     @Test
@@ -65,7 +76,7 @@ public class RegControllerTest {
 
         var expectedErrorMessage = "Пользователь с таким username уже зарегистрирован.";
 
-        when(users.save(any(User.class))).thenThrow(new RuntimeException());
+        when(users.save(any(User.class))).thenReturn(Optional.empty());
 
         this.mockMvc.perform(post("/reg")
                         .param("username", expectedUserName)

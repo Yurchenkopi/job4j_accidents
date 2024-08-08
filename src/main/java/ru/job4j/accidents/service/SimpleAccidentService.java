@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 @Service
+@Qualifier("simpleAccidentService")
 @AllArgsConstructor
 public class SimpleAccidentService implements AccidentService {
     private final AccidentStore accidentHbm;

@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 @Service
-@Qualifier("springDataAccidentService")
+
 @AllArgsConstructor
 public class SpringDataAccidentService implements AccidentService {
     private final AccidentSpringData accidentSpringData;
