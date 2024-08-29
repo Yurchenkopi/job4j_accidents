@@ -3,7 +3,6 @@ package ru.job4j.accidents.service;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Accident;
@@ -39,10 +38,10 @@ public class SpringDataAccidentService implements AccidentService {
             if (!currentAccident.get().equals(accident)) {
                 try {
                     accidentSpringData.save(accident);
+                    rsl = true;
                 } catch (Exception e) {
                     LOG.error("Возникло исключение при обновлении записей в БД.");
                 }
-                rsl = true;
             }
         }
         return rsl;
